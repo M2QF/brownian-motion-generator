@@ -46,7 +46,7 @@ void BMG::generate_default_BM(std::size_t n, std::vector<std::vector<double>>& B
     }
     else
     {
-#ifdef _OPENMP
+#ifdef OMP_ENABLED
         #pragma omp parallel for
         for (size_t i = 0; i < N; i++)
         {

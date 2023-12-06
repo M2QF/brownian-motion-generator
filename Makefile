@@ -7,11 +7,13 @@ else
 endif
 
 ifeq ($(OMP), true)
-	CFLAGS=$(CFLAGS) -Xcompiler -fopenmp -D_OPENMP
+	FLAGS=$(CFLAGS) -Xcompiler -fopenmp -DOMP_ENABLED
+else
+	FLAGS=$(CFLAGS)
 endif
 
 lib/bmg.so: src/bmg.cu header/bmg.h
-	$(CC) -o $@ $< -shared -Xcompiler -fPIC -O3 -lcublas -lcusparse -lcurand $(CFLAGS)
+	$(CC) -o $@ $< -shared -Xcompiler -fPIC -O3 -lcublas -lcusparse -lcurand $(FLAGS)
 
 clean :
 	rm -f lib/bmg.so
@@ -19,3 +21,11 @@ clean :
 release:
 	make clean
 	make RELEASE=true
+
+omp:
+	make clean
+	make OMP=true
+
+omp_release:
+	make clean
+	make OMP=true RELEASE=true
