@@ -33,3 +33,6 @@ release:
 
 doc :
 	doxygen Doxyfile
+
+test : tests/test.cu lib/libbmg.a
+	$(CC) -o bin/test.out $< -Iheader -Llib -lbmg -lcunit

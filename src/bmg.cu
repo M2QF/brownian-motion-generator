@@ -2,7 +2,7 @@
  * @file bmg.cu
  * @author AiglonDore
  * @brief Implements {@link bmg.h}
- * @version 0.1
+ * @version 1.0
  * @date 2023-12-06
  *
  * @copyright Copyright (c) 2023

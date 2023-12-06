@@ -17,5 +17,10 @@ jobs:
       run: |
         sudo apt update
         sudo apt install nvidia-cuda-toolkit -y
+        sudo apt install libcunit1 libcunit1-dev -y
     - name: make
       run: make all
+    - name: build tests
+      run: make test
+    - name: run tests
+      run: ./bin/test.out --cpu
