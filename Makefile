@@ -1,22 +1,56 @@
 CC=nvcc
 
-ifeq ($(RELEASE), true)
-	CFLAGS=-O3 -Xcompiler -s -Xcompiler -Wall -Xcompiler -Wextra
+ifeq ($(OS), Windows_NT)
+	ifeq ($(RELEASE), true)
+		CFLAGS=-O3
+	else
+		CFLAGS=-g
+	endif
+
+	ifeq ($(OMP), true)
+		FLAGS=$(CFLAGS) -Xcompiler /openmp
+	else
+		FLAGS=$(CFLAGS)
+	endif
 else
-	CFLAGS=-g -Xcompiler -Wall -Xcompiler -Wextra
+	ifeq ($(RELEASE), true)
+		CFLAGS=-O3 -Xcompiler -s -Xcompiler -Wall -Xcompiler -Wextra
+	else
+		CFLAGS=-g -Xcompiler -Wall -Xcompiler -Wextra
+	endif
+
+	ifeq ($(OMP), true)
+		FLAGS=$(CFLAGS) -Xcompiler -fopenmp
+	else
+		FLAGS=$(CFLAGS)
+	endif
 endif
 
-ifeq ($(OMP), true)
-	FLAGS=$(CFLAGS) -Xcompiler -fopenmp
-else
-	FLAGS=$(CFLAGS)
-endif
 
-lib/bmg.so: src/bmg.cu header/bmg.h
-	$(CC) -o $@ $< -shared -Xcompiler -fPIC -O3 -lcublas -lcusparse -lcurand $(FLAGS)
+LIBS=-lcublas -lcusparse -lcurand
+
+all: windows linux
+
+windows: lib/bmg.lib
+
+linux: lib/libbmg.a
+
+lib/bmg.lib: obj/bmg.obj
+	lib /OUT:$@ $<
+
+obj/bmg.obj: src/bmg.cu header/bmg.h
+	$(CC) -c -o $@ $< $(FLAGS) $(LIBS)
+
+lib/libbmg.a: obj/bmg.o
+	ar rcs $@ $<
+
+lib/bmg.o: src/bmg.cu header/bmg.h
+	$(CC) -c -o $@ $< $(FLAGS) $(LIBS)
 
 clean :
-	rm -f lib/bmg.so
+	rm -f -v lib/bmg.a
+	rm -f -v lib/bmg.lib
+	rm -f -v obj/*.o*
 
 release:
 	make clean
