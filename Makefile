@@ -10,11 +10,11 @@ ifeq ($(OMP), true)
 	CFLAGS=$(CFLAGS) -Xcompiler -fopenmp -D_OPENMP
 endif
 
-bmg.so: bmg.cu
+lib/bmg.so: src/bmg.cu header/bmg.h
 	$(CC) -o bmg.so bmg.cu -shared -Xcompiler -fPIC -O3 -lcublas -lcusparse -lcurand $(CFLAGS)
 
 clean :
-	rm -f bmg.so
+	rm -f lib/bmg.so
 
 release:
 	make clean
