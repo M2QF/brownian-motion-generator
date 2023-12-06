@@ -12,6 +12,7 @@ ifeq ($(OS), Windows_NT)
 	else
 		FLAGS=$(CFLAGS)
 	endif
+	DEL=del /Q
 else
 	ifeq ($(RELEASE), true)
 		CFLAGS=-O3 -Xcompiler -s -Xcompiler -Wall -Xcompiler -Wextra
@@ -24,6 +25,7 @@ else
 	else
 		FLAGS=$(CFLAGS)
 	endif
+	DEL=rm -f -v
 endif
 
 
@@ -48,18 +50,22 @@ obj/bmg.o: src/bmg.cu header/bmg.h
 	$(CC) -c -o $@ $< $(FLAGS) $(LIBS)
 
 clean :
-	rm -f -v lib/bmg.a
-	rm -f -v lib/bmg.lib
-	rm -f -v obj/*.o*
+	$(DEL) lib/bmg.a
+	$(DEL) lib/bmg.lib
+	$(DEL) obj/*.o*
 
-release:
+linux_release:
 	make clean
-	make RELEASE=true
+	make linux RELEASE=true
+
+windows_release:
+	make clean
+	make windows RELEASE=true
 
 omp:
 	make clean
-	make OMP=true
+	make linux OMP=true
 
 omp_release:
 	make clean
-	make OMP=true RELEASE=true
+	make linux OMP=true RELEASE=true
