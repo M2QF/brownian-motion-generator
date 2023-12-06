@@ -44,7 +44,7 @@ obj/bmg.obj: src/bmg.cu header/bmg.h
 lib/libbmg.a: obj/bmg.o
 	ar rcs $@ $<
 
-lib/bmg.o: src/bmg.cu header/bmg.h
+obj/bmg.o: src/bmg.cu header/bmg.h
 	$(CC) -c -o $@ $< $(FLAGS) $(LIBS)
 
 clean :
