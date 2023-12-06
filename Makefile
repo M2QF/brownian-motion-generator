@@ -7,7 +7,7 @@ else
 endif
 
 ifeq ($(OMP), true)
-	FLAGS=$(CFLAGS) -Xcompiler -fopenmp -DOMP_ENABLED
+	FLAGS=$(CFLAGS) -Xcompiler -fopenmp
 else
 	FLAGS=$(CFLAGS)
 endif
