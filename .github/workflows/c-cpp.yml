@@ -18,17 +18,4 @@ jobs:
         sudo apt update
         sudo apt install nvidia-cuda-toolkit -y
     - name: make
-      run: make linux
-
-  windows_build:
-      
-      runs-on: windows-latest
-  
-      steps:
-      - uses: actions/checkout@v3
-      - name: install CUDA and nvcc
-        run: |
-          choco install cuda -y
-          refreshenv
-      - name: make
-        run: make windows
+      run: make all
