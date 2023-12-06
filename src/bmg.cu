@@ -4,9 +4,9 @@
  * @brief Implements {@link bmg.h}
  * @version 0.1
  * @date 2023-12-06
- * 
+ *
  * @copyright Copyright (c) 2023
- * 
+ *
  */
 
 #include "../header/bmg.h"
@@ -19,7 +19,15 @@
 
 using namespace BMG;
 
-namespace std {
+namespace std
+{
+    /**
+     * @brief Provides comparizon function
+     * 
+     * @param a number
+     * @param b number
+     * @return size_t minimum of them
+     */
     size_t min(int a, size_t b)
     {
         if (a < 0)
@@ -28,15 +36,33 @@ namespace std {
     }
 }
 
-namespace CUDA{
-    namespace Kernel {
-        __global__ void generate_BM_kernel(double** BM, std::size_t n, double start, int offset)
+/**
+ * @brief Holds CUDA functions
+ * 
+ */
+namespace CUDA
+{
+    /**
+     * @brief Holds CUDA kernels
+     * 
+     */
+    namespace Kernel
+    {
+        /**
+         * @brief Generates Brownian Motions on GPU
+         * 
+         * @param BM array of BMs
+         * @param n size of each BM
+         * @param start starting value
+         * @param offset offset to avoid collisions
+         */
+        __global__ void generate_BM_kernel(double **BM, std::size_t n, double start, int offset)
         {
             int tid = blockIdx.x * blockDim.x + threadIdx.x;
             curandState state;
 
             curand_init(clock64(), tid + offset, 0, &state);
-            
+
             BM[threadIdx.x + offset][0] = start;
 
             for (size_t i = 1; i < n; i++)
@@ -46,19 +72,27 @@ namespace CUDA{
         }
     }
 
-    void generate_default_BMs_on_cuda(std::size_t n, std::vector<std::vector<double>>& BM, std::size_t N, double start)
+    /**
+     * @brief Generates Brownian Motions on GPU
+     * 
+     * @param n size of each BM
+     * @param BM array of BMs
+     * @param N number of BMs
+     * @param start starting value
+     */
+    void generate_default_BMs_on_cuda(std::size_t n, std::vector<std::vector<double>> &BM, std::size_t N, double start)
     {
         cudaDeviceProp prop;
         cudaGetDeviceProperties(&prop, 0);
 
         int nb_max_thread = prop.maxThreadsPerBlock;
 
-        double** d_BM;
-        cudaMalloc((void**)&d_BM, N * sizeof(double*));
+        double **d_BM;
+        cudaMalloc((void **)&d_BM, N * sizeof(double *));
         for (size_t i = 0; i < N; i++)
         {
             BM[i].resize(n);
-            cudaMalloc((void**)&d_BM[i], n * sizeof(double));
+            cudaMalloc((void **)&d_BM[i], n * sizeof(double));
         }
 
         for (int i = 0; i < N / nb_max_thread + 1; i++)
@@ -74,7 +108,7 @@ namespace CUDA{
     }
 }
 
-void BMG::generate_default_BM(std::size_t n, std::vector<double>& BM, double start)
+void BMG::generate_default_BM(std::size_t n, std::vector<double> &BM, double start)
 {
     BM.resize(n);
     BM[0] = start;
@@ -91,7 +125,7 @@ void BMG::generate_default_BM(std::size_t n, std::vector<double>& BM, double sta
     BM.shrink_to_fit();
 }
 
-void BMG::generate_default_BM(std::size_t n, std::vector<std::vector<double>>& BM, std::size_t N, double start, bool cuda)
+void BMG::generate_default_BM(std::size_t n, std::vector<std::vector<double>> &BM, std::size_t N, double start, bool cuda)
 {
     BM.resize(N);
     int nb_GPU(0);
@@ -102,7 +136,7 @@ void BMG::generate_default_BM(std::size_t n, std::vector<std::vector<double>>& B
     else
     {
 #ifdef _OPENMP
-        #pragma omp parallel for
+#pragma omp parallel for
         for (size_t i = 0; i < N; i++)
         {
             generate_default_BM(n, BM[i], start);
@@ -111,9 +145,8 @@ void BMG::generate_default_BM(std::size_t n, std::vector<std::vector<double>>& B
         std::thread *threads = new std::thread[N];
         for (size_t i = 0; i < N; i++)
         {
-            threads[i] = std::thread([n, &BM, start, i](void) -> void {
-                BMG::generate_default_BM(n, BM[i], start);
-            });
+            threads[i] = std::thread([n, &BM, start, i](void) -> void
+                                     { BMG::generate_default_BM(n, BM[i], start); });
         }
         for (size_t i = 0; i < N; i++)
         {
@@ -124,6 +157,6 @@ void BMG::generate_default_BM(std::size_t n, std::vector<std::vector<double>>& B
         threads = nullptr;
 #endif
     }
-    
+
     BM.shrink_to_fit();
 }

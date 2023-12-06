@@ -30,3 +30,6 @@ clean :
 release:
 	make clean
 	make RELEASE=true
+
+doc :
+	doxygen Doxyfile
