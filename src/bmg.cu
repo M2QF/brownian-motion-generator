@@ -9,7 +9,7 @@
  * 
  */
 
-#include "bmg.h"
+#include "../header/bmg.h"
 #include <random>
 #include <omp.h>
 #include <cuda_runtime.h>
