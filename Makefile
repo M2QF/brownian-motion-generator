@@ -6,6 +6,10 @@ else
 	CFLAGS=-g -Xcompiler -Wall -Xcompiler -Wextra
 endif
 
+ifeq ($(OMP), true)
+	CFLAGS=$(CFLAGS) -Xcompiler -fopenmp -D_OPENMP
+endif
+
 bmg.so: bmg.cu
 	$(CC) -o bmg.so bmg.cu -shared -Xcompiler -fPIC -O3 -lcublas -lcusparse -lcurand $(CFLAGS)
 
