@@ -14,6 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: install CUDA and nvcc
-      run: sudo apt-get install nvcc
+      run: sudo apt install nvidia-cuda-toolkit -y
     - name: make
       run: make
