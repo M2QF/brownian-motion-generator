@@ -11,7 +11,7 @@ ifeq ($(OMP), true)
 endif
 
 lib/bmg.so: src/bmg.cu header/bmg.h
-	$(CC) -o bmg.so bmg.cu -shared -Xcompiler -fPIC -O3 -lcublas -lcusparse -lcurand $(CFLAGS)
+	$(CC) -o $@ $< -shared -Xcompiler -fPIC -O3 -lcublas -lcusparse -lcurand $(CFLAGS)
 
 clean :
 	rm -f lib/bmg.so
