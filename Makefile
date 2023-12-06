@@ -34,5 +34,5 @@ release:
 doc :
 	doxygen Doxyfile
 
-test : tests/test.cu lib/libbmg.a
-	$(CC) -o bin/test.out $< -Iheader -Llib -lbmg -lcunit
+test : tests/test.cu tests/dbmg.cu tests/dbmg.h tests/constants.h lib/libbmg.a
+	$(CC) -o bin/test.out tests/*.cu -Iheader -Llib -lbmg -lcunit
